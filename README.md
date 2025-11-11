@@ -1,50 +1,81 @@
-# Welcome to your Expo app 👋
+# Circular Slider (Expo + React Native Reanimated)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A bottom-aligned, snapping carousel of circular avatars that updates the full-screen background as you scroll. Built with Expo Router, React Native Reanimated 3, and static assets living under `assets/custom`.
 
-## Get started
+![Circular slider preview](docs/preview.gif)
+
+## Features
+
+- Smooth translate/bounce animation for the focused avatar
+- Snap-to-item horizontal scroll with `Animated.FlatList`
+- Cross-fading background image that tracks the active item
+- Pure JS: no native modules beyond Reanimated
+- Plug-and-play assets—drop images in `assets/custom` and list them once
+
+## Project Structure
+
+```
+app/
+  _layout.tsx            # Expo Router tabs (Home + Circular Slider)
+  circular-slider.tsx    # Carousel screen
+  Home.tsx               # Sample home tab
+assets/
+  custom/
+    index.ts             # sliderImages array (static requires)
+    image-1.jpg
+    image-2.jpg
+    ...
+```
+
+## Getting Started
 
 1. Install dependencies
-
    ```bash
    npm install
+   # or
+   yarn install
    ```
 
-2. Start the app
-
+2. Start the Expo dev server
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+3. Open the project in Expo Go, iOS Simulator, or Android Emulator and navigate to the **Circular Slider** tab.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Adding / Updating Images
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+1. Copy your `.jpg` / `.png` files into `assets/custom/`.
+2. Update `assets/custom/index.ts`:
+   ```ts
+   export const sliderImages = [
+     require("./image-1.jpg"),
+     require("./image-2.jpg"),
+     require("./image-3.jpg"),
+   ];
+   ```
+3. Restart Metro (`expo start`) so the new assets are registered.
 
-## Get a fresh project
+## Animation Breakdown
 
-When you're ready, run:
+- `useSharedValue` + `useAnimatedScrollHandler` track the FlatList offset and normalize it to item indices.
+- `useAnimatedStyle` drives each avatar’s bounce & border color via `interpolate` and `interpolateColor`.
+- `FadeIn` / `FadeOut` transitions on an `Animated.Image` cross-fade the background as the `activeIndex` changes.
+- `snapToInterval` and `decelerationRate="fast"` keep the carousel aligned to the center item.
 
-```bash
-npm run reset-project
-```
+## Customization Ideas
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+- Tweak `_itemSize` / `_spacing` constants in `app/circular-slider.tsx` to change avatar size and gutter.
+- Replace the border with shadows or glows in the `CarouselItem` animated style.
+- Add captions or call-to-action buttons tied to the `activeIndex`.
+- Apply a gradient or blur overlay atop the background image using `expo-linear-gradient`.
 
-## Learn more
+## Troubleshooting
 
-To learn more about developing your project with Expo, look at the following resources:
+- **Metro can’t find your images**: confirm the filenames in `sliderImages` match exactly (case-sensitive, no spaces).
+- **Background looks stretched**: keep `resizeMode="cover"` and the `width/height: "100%"` styles on the `Animated.Image`.
+- **Reanimated errors**: ensure the Babel plugin is configured (auto-added by Expo) and that you restart Metro after installing dependencies.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## License
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+MIT © Your Name
